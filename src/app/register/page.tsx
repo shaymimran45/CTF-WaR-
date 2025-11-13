@@ -1,190 +1,196 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
-import { AuthService } from "@/lib/authService";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { AuthService } from '@/lib/authService';
 
 export default function RegisterPage() {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
-  const router = useRouter();
-  const { signUp } = useAuth();
+    const router = useRouter();
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState(false);
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    setSuccess(false);
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError('');
 
-    // Validation
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      setLoading(false);
-      return;
+        // Validation
+        if (password !== confirmPassword) {
+            setError('Passwords do not match');
+            setLoading(false);
+            return;
+        }
+
+        if (password.length < 6) {
+            setError('Password must be at least 6 characters');
+            setLoading(false);
+            return;
+        }
+
+        try {
+            await AuthService.signUp(email, password, username);
+            setSuccess(true);
+            setTimeout(() => {
+                router.push('/challenges');
+            }, 2000);
+        } catch (err: any) {
+            setError(err.message || 'Registration failed. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (success) {
+        return (
+            <div className="min-h-screen bg-black text-matrix-green flex items-center justify-center p-6">
+                <div className="scan-line"></div>
+                <div className="cyber-card p-12 max-w-md text-center">
+                    <div className="text-6xl mb-6">✓</div>
+                    <h2 className="text-3xl font-bold neon-green mb-4">ACCOUNT_CREATED</h2>
+                    <p className="text-neon-cyan mb-6">
+                        Welcome to CTF-WaR! Redirecting...
+                    </p>
+                    <div className="bg-black border border-matrix-green p-4 font-mono text-sm">
+                        <div className="text-matrix-green">✓ User registered</div>
+                        <div className="text-matrix-green">✓ Database updated</div>
+                        <div className="text-neon-cyan">→ Redirecting to challenges...</div>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters long");
-      setLoading(false);
-      return;
-    }
+    return (
+        <div className="min-h-screen bg-black text-matrix-green flex items-center justify-center p-6 relative">
+            <div className="scan-line"></div>
 
-    // Check if username exists
-    const usernameExists = await AuthService.checkUsernameExists(username);
-    if (usernameExists) {
-      setError("Username is already taken");
-      setLoading(false);
-      return;
-    }
+            <div className="max-w-md w-full relative z-10">
+                <div className="text-center mb-8">
+                    <h1 className="text-5xl font-bold neon-green mb-4 terminal-cursor">
+                        {'>> REGISTER'}
+                    </h1>
+                    <p className="text-neon-cyan">
+                        Join the hacker community
+                    </p>
+                </div>
 
-    try {
-      const result = await signUp(email, password, username);
+                <div className="cyber-card p-8">
+                    {error && (
+                        <div className="cyber-card border-neon-red text-neon-red p-4 mb-6">
+                            ❌ {error}
+                        </div>
+                    )}
 
-      if (result.success) {
-        setSuccess(true);
-        setTimeout(() => {
-          router.push("/login");
-        }, 2000);
-      } else {
-        setError(result.error || "Registration failed");
-      }
-    } catch (err) {
-      setError("An error occurred. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+                    <form onSubmit={handleSubmit}>
+                        <div className="mb-6">
+                            <label className="block text-neon-cyan mb-2 text-sm">
+                                {'>> USERNAME:'}
+                            </label>
+                            <input
+                                type="text"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                required
+                                minLength={3}
+                                className="cyber-input w-full"
+                                placeholder="elite_hacker"
+                                autoComplete="username"
+                            />
+                        </div>
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full">
-        <div className="text-center mb-8">
-          <h2 className="text-4xl font-bold text-gray-900 mb-2">Join CyberCTF</h2>
-          <p className="text-gray-600">Create your account and start hacking</p>
+                        <div className="mb-6">
+                            <label className="block text-neon-cyan mb-2 text-sm">
+                                {'>> EMAIL_ADDRESS:'}
+                            </label>
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                className="cyber-input w-full"
+                                placeholder="hacker@ctf.com"
+                                autoComplete="email"
+                            />
+                        </div>
+
+                        <div className="mb-6">
+                            <label className="block text-neon-cyan mb-2 text-sm">
+                                {'>> PASSWORD:'}
+                            </label>
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                minLength={6}
+                                className="cyber-input w-full"
+                                placeholder="••••••••"
+                                autoComplete="new-password"
+                            />
+                            <div className="text-xs text-gray-500 mt-1">
+                                Minimum 6 characters
+                            </div>
+                        </div>
+
+                        <div className="mb-6">
+                            <label className="block text-neon-cyan mb-2 text-sm">
+                                {'>> CONFIRM_PASSWORD:'}
+                            </label>
+                            <input
+                                type="password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                required
+                                minLength={6}
+                                className="cyber-input w-full"
+                                placeholder="••••••••"
+                                autoComplete="new-password"
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="cyber-button w-full py-4 text-lg mb-6"
+                        >
+                            {loading ? '⏳ CREATING_ACCOUNT...' : '🚀 CREATE_ACCOUNT'}
+                        </button>
+                    </form>
+
+                    <div className="text-center">
+                        <Link href="/login" className="text-neon-cyan hover:text-matrix-green">
+                            {'>> ALREADY_HAVE_ACCOUNT? LOGIN'}
+                        </Link>
+                    </div>
+
+                    {/* Terminal Output */}
+                    <div className="mt-8 bg-black border border-matrix-green p-4 font-mono text-xs">
+                        <div className="text-gray-500">$ ./create_user.sh</div>
+                        <div className="text-gray-500">Initializing registration...</div>
+                        <div className="text-matrix-green">✓ System ready</div>
+                        <div className="text-neon-cyan terminal-cursor">Enter your details...</div>
+                    </div>
+                </div>
+
+                <div className="text-center mt-6">
+                    <Link href="/" className="text-gray-500 hover:text-matrix-green">
+                        ← Back to home
+                    </Link>
+                </div>
+            </div>
+
+            {/* Background Elements */}
+            <div className="absolute inset-0 opacity-5">
+                <div className="absolute top-20 right-10 text-6xl neon-green">{'{'}</div>
+                <div className="absolute bottom-20 left-20 text-6xl neon-cyan">{'}'}</div>
+                <div className="absolute top-1/2 right-1/4 text-6xl neon-purple">{'[]'}</div>
+            </div>
         </div>
-
-        <div className="bg-white rounded-lg shadow-xl p-8">
-          {error && (
-            <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-              {error}
-            </div>
-          )}
-
-          {success && (
-            <div className="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
-              Account created successfully! Redirecting to login...
-            </div>
-          )}
-
-          <form onSubmit={handleRegister} className="space-y-6">
-            <div>
-              <label
-                htmlFor="username"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Username
-              </label>
-              <input
-                id="username"
-                name="username"
-                type="text"
-                required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="h4ck3r"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Email Address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="you@example.com"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="••••••••"
-              />
-              <p className="mt-1 text-xs text-gray-500">
-                Must be at least 8 characters
-              </p>
-            </div>
-
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Confirm Password
-              </label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="••••••••"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition"
-            >
-              {loading ? "Creating account..." : "Create Account"}
-            </button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-gray-600">
-              Already have an account?{" "}
-              <Link
-                href="/login"
-                className="text-purple-600 hover:text-purple-700 font-semibold"
-              >
-                Sign in
-              </Link>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    );
 }

@@ -1,17 +1,16 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { ChallengeService } from "@/lib/challengeService";
-import { useAuth } from "@/contexts/AuthContext";
-import { Challenge } from "@/lib/supabase";
-import { AnimatedCard, StaggerContainer, StaggerItem } from "@/components/Animations";
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { ChallengeService } from '@/lib/challengeService';
+import { useAuth } from '@/contexts/AuthContext';
+import { Challenge } from '@/lib/supabase';
 
 export default function ChallengesPage() {
-    const [selectedCategory, setSelectedCategory] = useState<string>("all");
-    const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
+    const [selectedCategory, setSelectedCategory] = useState<string>('all');
+    const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
     const [challenges, setChallenges] = useState<Challenge[]>([]);
-    const [solvedIds, setSolvedIds] = useState<number[]>([]);
+    const [solvedIds, setSolvedIds] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const { user } = useAuth();
 
@@ -29,14 +28,14 @@ export default function ChallengesPage() {
         setLoading(true);
         try {
             let data;
-            if (selectedCategory === "all") {
+            if (selectedCategory === 'all') {
                 data = await ChallengeService.getAllChallenges();
             } else {
                 data = await ChallengeService.getChallengesByCategory(selectedCategory);
             }
             setChallenges(data);
         } catch (error) {
-            console.error("Error loading challenges:", error);
+            console.error('Error loading challenges:', error);
         } finally {
             setLoading(false);
         }
@@ -48,152 +47,210 @@ export default function ChallengesPage() {
             const solved = await ChallengeService.getUserSolvedChallenges(user.id);
             setSolvedIds(solved);
         } catch (error) {
-            console.error("Error loading solved challenges:", error);
+            console.error('Error loading solved challenges:', error);
         }
-    }; const categories = [
-        { id: "all", name: "All Categories", icon: "🎯" },
-        { id: "web", name: "Web", icon: "🌐" },
-        { id: "crypto", name: "Crypto", icon: "🔐" },
-        { id: "reversing", name: "Reversing", icon: "🔍" },
-        { id: "forensics", name: "Forensics", icon: "🔬" },
-        { id: "pwn", name: "Pwn", icon: "💥" },
-        { id: "misc", name: "Misc", icon: "🎲" },
+    };
+
+    const categories = [
+        { id: 'all', name: 'ALL', icon: '🎯' },
+        { id: 'web', name: 'WEB', icon: '🌐' },
+        { id: 'crypto', name: 'CRYPTO', icon: '🔐' },
+        { id: 'forensics', name: 'FORENSICS', icon: '🔍' },
+        { id: 'pwn', name: 'PWN', icon: '💥' },
+        { id: 'reversing', name: 'REVERSING', icon: '🔄' },
+        { id: 'misc', name: 'MISC', icon: '🎲' },
     ];
 
-    const difficulties = ["all", "Easy", "Medium", "Hard"];
+    const difficulties = ['all', 'Easy', 'Medium', 'Hard'];
 
     const filteredChallenges = challenges.filter((challenge) => {
-        const categoryMatch =
-            selectedCategory === "all" || challenge.category === selectedCategory;
-        const difficultyMatch =
-            selectedDifficulty === "all" || challenge.difficulty === selectedDifficulty;
+        const categoryMatch = selectedCategory === 'all' || challenge.category === selectedCategory;
+        const difficultyMatch = selectedDifficulty === 'all' || challenge.difficulty === selectedDifficulty;
         return categoryMatch && difficultyMatch;
-    }); const getDifficultyColor = (difficulty: string) => {
+    });
+
+    const getDifficultyColor = (difficulty: string) => {
         switch (difficulty) {
-            case "Easy":
-                return "text-green-600 bg-green-100";
-            case "Medium":
-                return "text-yellow-600 bg-yellow-100";
-            case "Hard":
-                return "text-red-600 bg-red-100";
+            case 'Easy':
+                return 'border-matrix-green text-matrix-green';
+            case 'Medium':
+                return 'border-neon-cyan text-neon-cyan';
+            case 'Hard':
+                return 'border-neon-red text-neon-red';
             default:
-                return "text-gray-600 bg-gray-100";
+                return 'border-gray-500 text-gray-500';
         }
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto">
-                <h1 className="text-4xl font-bold text-gray-900 mb-8">Challenges</h1>
+        <div className="min-h-screen bg-black text-matrix-green p-8 relative">
+            <div className="scan-line"></div>
 
+            <div className="max-w-7xl mx-auto">
+                {/* Header */}
+                <div className="mb-12">
+                    <h1 className="text-5xl font-bold neon-green mb-4 terminal-cursor">
+                        &lt; CHALLENGE_DATABASE /&gt;
+                    </h1>
+                    <p className="text-neon-cyan text-lg">
+                        {filteredChallenges.length} challenges loaded | Select category to begin
+                    </p>
+                </div>
+
+                {/* Filters */}
+                <div className="mb-12">
+                    {/* Category Filter */}
+                    <div className="mb-6">
+                        <label className="block text-neon-cyan mb-4 text-sm">
+                            {'>> SELECT_CATEGORY:'}
+                        </label>
+                        <div className="flex flex-wrap gap-3">
+                            {categories.map((category) => (
+                                <button
+                                    key={category.id}
+                                    onClick={() => setSelectedCategory(category.id)}
+                                    className={`cyber-button px-6 py-3 ${selectedCategory === category.id ? 'bg-matrix-green text-black' : ''
+                                        }`}
+                                >
+                                    {category.icon} {category.name}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Difficulty Filter */}
+                    <div>
+                        <label className="block text-neon-cyan mb-4 text-sm">
+                            {'>> SELECT_DIFFICULTY:'}
+                        </label>
+                        <div className="flex flex-wrap gap-3">
+                            {difficulties.map((difficulty) => (
+                                <button
+                                    key={difficulty}
+                                    onClick={() => setSelectedDifficulty(difficulty)}
+                                    className={`cyber-button px-6 py-3 ${selectedDifficulty === difficulty ? 'bg-matrix-green text-black' : ''
+                                        }`}
+                                >
+                                    {difficulty.toUpperCase()}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Loading State */}
                 {loading && (
-                    <div className="text-center py-12">
-                        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                        <p className="mt-4 text-gray-600">Loading challenges...</p>
+                    <div className="text-center py-20">
+                        <div className="text-4xl neon-green mb-4">⏳</div>
+                        <div className="text-neon-cyan">LOADING_CHALLENGES...</div>
                     </div>
                 )}
 
-                {!loading && (
-                    <>
-                        {/* Filters */}
-                        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Category Filter */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Category
-                                    </label>
-                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                                        {categories.map((category) => (
-                                            <button
-                                                key={category.id}
-                                                onClick={() => setSelectedCategory(category.id)}
-                                                className={`px-3 py-2 rounded-lg text-sm font-medium transition ${selectedCategory === category.id
-                                                    ? "bg-blue-600 text-white"
-                                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                                                    }`}
-                                            >
-                                                {category.icon} {category.name}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
+                {/* Challenges Grid */}
+                {!loading && filteredChallenges.length > 0 && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredChallenges.map((challenge) => {
+                            const isSolved = solvedIds.includes(challenge.id);
+                            return (
+                                <Link
+                                    key={challenge.id}
+                                    href={`/challenges/${challenge.id}`}
+                                    className="cyber-card p-6 group relative"
+                                >
+                                    {/* Solved Badge */}
+                                    {isSolved && (
+                                        <div className="absolute top-4 right-4 bg-matrix-green text-black px-3 py-1 text-xs font-bold">
+                                            ✓ SOLVED
+                                        </div>
+                                    )}
 
-                                {/* Difficulty Filter */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Difficulty
-                                    </label>
-                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                                        {difficulties.map((difficulty) => (
-                                            <button
-                                                key={difficulty}
-                                                onClick={() => setSelectedDifficulty(difficulty)}
-                                                className={`px-3 py-2 rounded-lg text-sm font-medium transition ${selectedDifficulty === difficulty
-                                                    ? "bg-blue-600 text-white"
-                                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                                                    }`}
-                                            >
-                                                {difficulty === "all" ? "All" : difficulty}
-                                            </button>
-                                        ))}
+                                    {/* Category & Difficulty */}
+                                    <div className="flex justify-between items-center mb-4">
+                                        <span className="text-neon-cyan text-sm font-mono">
+                                            [{challenge.category.toUpperCase()}]
+                                        </span>
+                                        <span className={`text-xs px-3 py-1 border ${getDifficultyColor(challenge.difficulty)}`}>
+                                            {challenge.difficulty.toUpperCase()}
+                                        </span>
                                     </div>
+
+                                    {/* Title */}
+                                    <h3 className="text-2xl font-bold neon-green mb-3 group-hover:glitch-text">
+                                        {challenge.title}
+                                    </h3>
+
+                                    {/* Description */}
+                                    <p className="text-gray-400 mb-4 text-sm line-clamp-3">
+                                        {challenge.description}
+                                    </p>
+
+                                    {/* Footer */}
+                                    <div className="flex justify-between items-center pt-4 border-t border-matrix-green">
+                                        <span className="text-neon-purple font-bold">
+                                            {challenge.points} PTS
+                                        </span>
+                                        <span className="text-matrix-green group-hover:text-neon-cyan">
+                                            HACK &gt;&gt;
+                                        </span>
+                                    </div>
+                                </Link>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {/* Empty State */}
+                {!loading && filteredChallenges.length === 0 && (
+                    <div className="text-center py-20">
+                        <div className="cyber-card p-12 max-w-md mx-auto">
+                            <div className="text-6xl mb-4">🔍</div>
+                            <h3 className="text-2xl font-bold neon-red mb-4">NO_CHALLENGES_FOUND</h3>
+                            <p className="text-gray-400 mb-6">
+                                No challenges match your current filters. Try selecting a different category or difficulty.
+                            </p>
+                            <button
+                                onClick={() => {
+                                    setSelectedCategory('all');
+                                    setSelectedDifficulty('all');
+                                }}
+                                className="cyber-button px-6 py-3"
+                            >
+                                RESET_FILTERS
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Stats Footer */}
+                {!loading && filteredChallenges.length > 0 && (
+                    <div className="mt-16 cyber-card p-6">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-center">
+                            <div>
+                                <div className="text-3xl font-bold neon-green mb-2">
+                                    {filteredChallenges.length}
                                 </div>
+                                <div className="text-sm text-gray-500">TOTAL CHALLENGES</div>
+                            </div>
+                            <div>
+                                <div className="text-3xl font-bold neon-cyan mb-2">
+                                    {solvedIds.length}
+                                </div>
+                                <div className="text-sm text-gray-500">SOLVED BY YOU</div>
+                            </div>
+                            <div>
+                                <div className="text-3xl font-bold neon-purple mb-2">
+                                    {filteredChallenges.reduce((sum, c) => sum + c.points, 0)}
+                                </div>
+                                <div className="text-sm text-gray-500">TOTAL POINTS</div>
+                            </div>
+                            <div>
+                                <div className="text-3xl font-bold neon-red mb-2">
+                                    {Math.round((solvedIds.length / challenges.length) * 100) || 0}%
+                                </div>
+                                <div className="text-sm text-gray-500">COMPLETION RATE</div>
                             </div>
                         </div>
-
-                        {/* Challenges List */}
-                        <StaggerContainer>
-                            <div className="space-y-4">
-                                {filteredChallenges.length === 0 ? (
-                                    <div className="bg-white rounded-lg shadow-md p-12 text-center">
-                                        <p className="text-gray-500 text-lg">
-                                            No challenges found with the selected filters.
-                                        </p>
-                                    </div>
-                                ) : (
-                                    filteredChallenges.map((challenge) => (
-                                        <StaggerItem key={challenge.id}>
-                                            <Link
-                                                href={`/challenges/${challenge.id}`}
-                                                className="block bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 p-6 hover:-translate-y-1"
-                                            >
-                                                <div className="flex items-center justify-between">
-                                                    <div className="flex-1">
-                                                        <div className="flex items-center gap-3 mb-2">
-                                                            <h3 className="text-xl font-semibold text-gray-900">
-                                                                {challenge.title}
-                                                            </h3>
-                                                            {solvedIds.includes(challenge.id) && (
-                                                                <span className="text-green-500 text-2xl">✓</span>
-                                                            )}
-                                                        </div>
-                                                        <div className="flex items-center gap-4 text-sm text-gray-600">
-                                                            <span className="capitalize">{challenge.category}</span>
-                                                            <span>•</span>
-                                                            <span>{challenge.solves} solves</span>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-center gap-4">
-                                                        <span
-                                                            className={`px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(
-                                                                challenge.difficulty
-                                                            )}`}
-                                                        >
-                                                            {challenge.difficulty}
-                                                        </span>
-                                                        <span className="text-2xl font-bold text-blue-600">
-                                                            {challenge.points}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </Link>
-                                        </StaggerItem>
-                                    ))
-                                )}
-                            </div>
-                        </StaggerContainer>
-                    </>
+                    </div>
                 )}
             </div>
         </div>

@@ -1,135 +1,120 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { AuthService } from '@/lib/authService';
 
 export default function LoginPage() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
     const router = useRouter();
-    const { signIn } = useAuth();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        setError("");
+        setError('');
 
         try {
-            const result = await signIn(email, password);
-
-            if (result.success) {
-                router.push("/challenges");
-            } else {
-                setError(result.error || "Login failed");
-            }
-        } catch (err) {
-            setError("An error occurred. Please try again.");
+            await AuthService.signIn(email, password);
+            router.push('/challenges');
+        } catch (err: any) {
+            setError(err.message || 'Login failed. Check your credentials.');
         } finally {
             setLoading(false);
         }
-    }; return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full">
+    };
+
+    return (
+        <div className="min-h-screen bg-black text-matrix-green flex items-center justify-center p-6 relative">
+            <div className="scan-line"></div>
+
+            <div className="max-w-md w-full relative z-10">
                 <div className="text-center mb-8">
-                    <h2 className="text-4xl font-bold text-gray-900 mb-2">Welcome Back</h2>
-                    <p className="text-gray-600">Sign in to your CyberCTF account</p>
+                    <h1 className="text-5xl font-bold neon-green mb-4 terminal-cursor">
+                        {'>> LOGIN'}
+                    </h1>
+                    <p className="text-neon-cyan">
+                        Access the CTF platform
+                    </p>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-xl p-8">
+                <div className="cyber-card p-8">
                     {error && (
-                        <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                            {error}
+                        <div className="cyber-card border-neon-red text-neon-red p-4 mb-6">
+                            ❌ {error}
                         </div>
                     )}
 
-                    <form onSubmit={handleLogin} className="space-y-6">
-                        <div>
-                            <label
-                                htmlFor="email"
-                                className="block text-sm font-medium text-gray-700 mb-2"
-                            >
-                                Email Address
+                    <form onSubmit={handleSubmit}>
+                        <div className="mb-6">
+                            <label className="block text-neon-cyan mb-2 text-sm">
+                                {'>> EMAIL_ADDRESS:'}
                             </label>
                             <input
-                                id="email"
-                                name="email"
                                 type="email"
-                                required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder="you@example.com"
+                                required
+                                className="cyber-input w-full"
+                                placeholder="hacker@ctf.com"
+                                autoComplete="email"
                             />
                         </div>
 
-                        <div>
-                            <label
-                                htmlFor="password"
-                                className="block text-sm font-medium text-gray-700 mb-2"
-                            >
-                                Password
+                        <div className="mb-6">
+                            <label className="block text-neon-cyan mb-2 text-sm">
+                                {'>> PASSWORD:'}
                             </label>
                             <input
-                                id="password"
-                                name="password"
                                 type="password"
-                                required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                required
+                                className="cyber-input w-full"
                                 placeholder="••••••••"
+                                autoComplete="current-password"
                             />
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center">
-                                <input
-                                    id="remember-me"
-                                    name="remember-me"
-                                    type="checkbox"
-                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                />
-                                <label
-                                    htmlFor="remember-me"
-                                    className="ml-2 block text-sm text-gray-700"
-                                >
-                                    Remember me
-                                </label>
-                            </div>
-
-                            <Link
-                                href="/forgot-password"
-                                className="text-sm text-blue-600 hover:text-blue-700"
-                            >
-                                Forgot password?
-                            </Link>
                         </div>
 
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                            className="cyber-button w-full py-4 text-lg mb-6"
                         >
-                            {loading ? "Signing in..." : "Sign In"}
+                            {loading ? '⏳ AUTHENTICATING...' : '🔓 ACCESS_SYSTEM'}
                         </button>
                     </form>
 
-                    <div className="mt-6 text-center">
-                        <p className="text-gray-600">
-                            Don't have an account?{" "}
-                            <Link
-                                href="/register"
-                                className="text-blue-600 hover:text-blue-700 font-semibold"
-                            >
-                                Sign up
-                            </Link>
-                        </p>
+                    <div className="text-center">
+                        <Link href="/register" className="text-neon-cyan hover:text-matrix-green">
+                            {'>> CREATE_NEW_ACCOUNT'}
+                        </Link>
+                    </div>
+
+                    {/* Terminal Output */}
+                    <div className="mt-8 bg-black border border-matrix-green p-4 font-mono text-xs">
+                        <div className="text-gray-500">$ ./authenticate.sh</div>
+                        <div className="text-gray-500">Connecting to server...</div>
+                        <div className="text-matrix-green">✓ Connection established</div>
+                        <div className="text-neon-cyan terminal-cursor">Awaiting credentials...</div>
                     </div>
                 </div>
+
+                <div className="text-center mt-6">
+                    <Link href="/" className="text-gray-500 hover:text-matrix-green">
+                        ← Back to home
+                    </Link>
+                </div>
+            </div>
+
+            {/* Background Elements */}
+            <div className="absolute inset-0 opacity-5">
+                <div className="absolute top-20 left-10 text-6xl neon-green">{'{'}</div>
+                <div className="absolute bottom-20 right-20 text-6xl neon-cyan">{'}'}</div>
+                <div className="absolute top-1/2 left-1/4 text-6xl neon-red">{'<>'}</div>
             </div>
         </div>
     );
