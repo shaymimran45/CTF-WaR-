@@ -10,7 +10,7 @@ export default function ChallengesPage() {
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
     const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
     const [challenges, setChallenges] = useState<Challenge[]>([]);
-    const [solvedIds, setSolvedIds] = useState<string[]>([]);
+    const [solvedIds, setSolvedIds] = useState<number[]>([]);
     const [loading, setLoading] = useState(true);
     const { user } = useAuth();
 
