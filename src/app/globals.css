@@ -8,8 +8,10 @@
   --neon-cyan: #00d4ff;
   --neon-red: #ff0040;
   --neon-purple: #b829ff;
+  --neon-yellow: #ffea00;
   --dark-bg: #000000;
   --dark-gray: #0a0a0a;
+  --grid-color: rgba(0, 255, 65, 0.1);
 }
 
 * {
@@ -26,6 +28,29 @@ body {
   position: relative;
 }
 
+/* Animated Grid Background */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    repeating-linear-gradient(0deg, transparent, transparent 2px, var(--grid-color) 2px, var(--grid-color) 3px),
+    repeating-linear-gradient(90deg, transparent, transparent 2px, var(--grid-color) 2px, var(--grid-color) 3px);
+  background-size: 100px 100px;
+  animation: grid-move 20s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.3;
+}
+
+@keyframes grid-move {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(100px, 100px); }
+}
+
 /* Matrix Background Effect */
 body::before {
   content: '';
@@ -34,25 +59,65 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background: 
-    linear-gradient(0deg, transparent 24%, rgba(0, 255, 65, 0.05) 25%, rgba(0, 255, 65, 0.05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 65, 0.05) 75%, rgba(0, 255, 65, 0.05) 76%, transparent 77%, transparent),
-    linear-gradient(90deg, transparent 24%, rgba(0, 255, 65, 0.05) 25%, rgba(0, 255, 65, 0.05) 26%, transparent 27%, transparent 74%, rgba(0, 255, 65, 0.05) 75%, rgba(0, 255, 65, 0.05) 76%, transparent 77%, transparent);
-  background-size: 50px 50px;
+  background: radial-gradient(circle at center, rgba(0, 255, 65, 0.05) 0%, transparent 70%);
   pointer-events: none;
-  z-index: 0;
+  z-index: 1;
+  animation: pulse-glow 4s ease-in-out infinite;
 }
 
-/* Glitch Animation */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+/* Floating Particles */
+@keyframes float-particle {
+  0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+  25% { transform: translateY(-20px) translateX(10px); opacity: 0.6; }
+  75% { transform: translateY(-10px) translateX(-10px); opacity: 0.4; }
+}
+
+/* Glitch Animation - Enhanced */
 @keyframes glitch {
-  0%, 100% { transform: translate(0); }
-  20% { transform: translate(-2px, 2px); }
-  40% { transform: translate(-2px, -2px); }
-  60% { transform: translate(2px, 2px); }
-  80% { transform: translate(2px, -2px); }
+  0%, 100% { 
+    transform: translate(0);
+    text-shadow: 
+      0 0 5px var(--matrix-green),
+      0 0 10px var(--matrix-green);
+  }
+  20% { 
+    transform: translate(-3px, 3px);
+    text-shadow: 
+      3px 0 var(--neon-red),
+      -3px 0 var(--neon-cyan);
+  }
+  40% { 
+    transform: translate(-3px, -3px);
+    text-shadow: 
+      3px 0 var(--neon-cyan),
+      -3px 0 var(--neon-red);
+  }
+  60% { 
+    transform: translate(3px, 3px);
+    text-shadow: 
+      -3px 0 var(--neon-red),
+      3px 0 var(--neon-cyan);
+  }
+  80% { 
+    transform: translate(3px, -3px);
+    text-shadow: 
+      -3px 0 var(--neon-cyan),
+      3px 0 var(--neon-red);
+  }
 }
 
 .glitch-text {
-  animation: glitch 0.3s infinite;
+  animation: glitch 0.5s infinite;
+  position: relative;
+}
+
+.glitch-text:hover {
+  animation-duration: 0.3s;
 }
 
 /* Terminal Cursor */
@@ -66,14 +131,16 @@ body::before {
   animation: cursor-blink 1s infinite;
 }
 
-/* Neon Glow Effects */
+/* Neon Glow Effects - Enhanced */
 .neon-green {
   color: var(--matrix-green);
   text-shadow: 
     0 0 5px var(--matrix-green),
     0 0 10px var(--matrix-green),
     0 0 20px var(--matrix-green),
-    0 0 40px var(--matrix-green);
+    0 0 40px var(--matrix-green),
+    0 0 80px var(--matrix-green);
+  animation: neon-flicker 3s infinite alternate;
 }
 
 .neon-blue {
@@ -81,7 +148,9 @@ body::before {
   text-shadow: 
     0 0 5px var(--neon-cyan),
     0 0 10px var(--neon-cyan),
-    0 0 20px var(--neon-cyan);
+    0 0 20px var(--neon-cyan),
+    0 0 40px var(--neon-cyan);
+  animation: neon-flicker 2.5s infinite alternate;
 }
 
 .neon-red {
@@ -89,7 +158,9 @@ body::before {
   text-shadow: 
     0 0 5px var(--neon-red),
     0 0 10px var(--neon-red),
-    0 0 20px var(--neon-red);
+    0 0 20px var(--neon-red),
+    0 0 40px var(--neon-red);
+  animation: neon-flicker 3.5s infinite alternate;
 }
 
 .neon-purple {
@@ -97,10 +168,21 @@ body::before {
   text-shadow: 
     0 0 5px var(--neon-purple),
     0 0 10px var(--neon-purple),
-    0 0 20px var(--neon-purple);
+    0 0 20px var(--neon-purple),
+    0 0 40px var(--neon-purple);
+  animation: neon-flicker 2.8s infinite alternate;
 }
 
-/* Cyber Buttons */
+@keyframes neon-flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    opacity: 1;
+  }
+  20%, 24%, 55% {
+    opacity: 0.8;
+  }
+}
+
+/* Cyber Buttons - Enhanced */
 .cyber-button {
   background: transparent;
   border: 2px solid var(--matrix-green);
@@ -112,8 +194,9 @@ body::before {
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
   clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
 }
 
 .cyber-button::before {
@@ -123,32 +206,56 @@ body::before {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: var(--matrix-green);
-  transition: left 0.3s ease;
+  background: linear-gradient(90deg, transparent, var(--matrix-green), transparent);
+  transition: left 0.5s ease;
   z-index: -1;
+}
+
+.cyber-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--matrix-green);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -2;
 }
 
 .cyber-button:hover {
   color: var(--dark-bg);
+  border-color: var(--neon-cyan);
+  transform: translateY(-2px);
   box-shadow: 
-    0 0 10px var(--matrix-green),
     0 0 20px var(--matrix-green),
-    inset 0 0 10px var(--matrix-green);
+    0 0 40px var(--matrix-green),
+    0 5px 20px rgba(0, 255, 65, 0.5);
 }
 
 .cyber-button:hover::before {
-  left: 0;
+  left: 100%;
 }
 
-/* Cyber Cards */
+.cyber-button:hover::after {
+  opacity: 1;
+}
+
+.cyber-button:active {
+  transform: translateY(0);
+}
+
+/* Cyber Cards - Enhanced */
 .cyber-card {
-  background: rgba(0, 255, 65, 0.05);
+  background: linear-gradient(135deg, rgba(0, 255, 65, 0.03) 0%, rgba(0, 0, 0, 0.8) 100%);
   border: 1px solid var(--matrix-green);
   border-radius: 0;
   padding: 20px;
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
+  backdrop-filter: blur(10px);
 }
 
 .cyber-card::before {
@@ -158,13 +265,29 @@ body::before {
   left: -2px;
   right: -2px;
   bottom: -2px;
-  background: linear-gradient(45deg, var(--matrix-green), var(--neon-cyan), var(--neon-red), var(--matrix-green));
+  background: linear-gradient(45deg, 
+    var(--matrix-green), 
+    var(--neon-cyan), 
+    var(--neon-purple),
+    var(--neon-red), 
+    var(--matrix-green));
   background-size: 400%;
   z-index: -1;
-  filter: blur(5px);
+  filter: blur(8px);
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.4s ease;
   animation: glowing 20s linear infinite;
+}
+
+.cyber-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.1), transparent);
+  transition: left 0.6s ease;
 }
 
 @keyframes glowing {
@@ -177,17 +300,25 @@ body::before {
   opacity: 1;
 }
 
-.cyber-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 
-    0 0 20px rgba(0, 255, 65, 0.5),
-    0 0 40px rgba(0, 255, 65, 0.3);
+.cyber-card:hover::after {
+  left: 100%;
 }
 
-/* Scan Line Effect */
+.cyber-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  border-color: var(--neon-cyan);
+  box-shadow: 
+    0 0 30px rgba(0, 255, 65, 0.6),
+    0 0 60px rgba(0, 255, 65, 0.4),
+    0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+/* Scan Line Effect - Enhanced */
 @keyframes scan-line {
-  0% { top: 0; }
-  100% { top: 100%; }
+  0% { top: -2px; opacity: 0; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.8; }
+  100% { top: 100%; opacity: 0; }
 }
 
 .scan-line {
@@ -195,12 +326,14 @@ body::before {
   top: 0;
   left: 0;
   width: 100%;
-  height: 2px;
-  background: linear-gradient(transparent, var(--matrix-green), transparent);
+  height: 4px;
+  background: linear-gradient(transparent, var(--matrix-green), var(--neon-cyan), var(--matrix-green), transparent);
   animation: scan-line 8s linear infinite;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.3;
+  box-shadow: 
+    0 0 10px var(--matrix-green),
+    0 0 20px var(--matrix-green);
 }
 
 /* Custom Scrollbar */
@@ -223,39 +356,159 @@ body::before {
   box-shadow: 0 0 20px var(--neon-cyan);
 }
 
-/* Cyber Input Fields */
+/* Cyber Input Fields - Enhanced */
 .cyber-input {
-  background: rgba(0, 255, 65, 0.05);
+  background: linear-gradient(135deg, rgba(0, 255, 65, 0.05) 0%, rgba(0, 0, 0, 0.9) 100%);
   border: 1px solid var(--matrix-green);
   color: var(--matrix-green);
   padding: 12px;
   font-family: 'Courier New', monospace;
   outline: none;
   transition: all 0.3s ease;
-  width: 100%;
+  position: relative;
 }
 
 .cyber-input:focus {
-  background: rgba(0, 255, 65, 0.1);
+  background: linear-gradient(135deg, rgba(0, 255, 65, 0.1) 0%, rgba(0, 0, 0, 0.95) 100%);
   box-shadow: 
-    0 0 10px var(--matrix-green),
-    inset 0 0 5px var(--matrix-green);
+    0 0 15px var(--matrix-green),
+    inset 0 0 10px rgba(0, 255, 65, 0.2),
+    0 0 30px rgba(0, 255, 65, 0.3);
   border-color: var(--neon-cyan);
+  transform: translateY(-1px);
 }
 
 .cyber-input::placeholder {
-  color: rgba(0, 255, 65, 0.5);
+  color: rgba(0, 255, 65, 0.4);
+}
+
+.cyber-input:hover {
+  border-color: var(--neon-cyan);
 }
 
 /* Text Selection */
 ::selection {
   background: var(--matrix-green);
   color: var(--dark-bg);
+  text-shadow: none;
+}
+
+/* Fade In Animations */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+
+.fade-in-down {
+  animation: fade-in-down 0.6s ease-out forwards;
+}
+
+.fade-in {
+  animation: fade-in 0.8s ease-out forwards;
+}
+
+/* Stagger Animation */
+.stagger-item {
+  opacity: 0;
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+
+.stagger-item:nth-child(1) { animation-delay: 0.1s; }
+.stagger-item:nth-child(2) { animation-delay: 0.2s; }
+.stagger-item:nth-child(3) { animation-delay: 0.3s; }
+.stagger-item:nth-child(4) { animation-delay: 0.4s; }
+.stagger-item:nth-child(5) { animation-delay: 0.5s; }
+.stagger-item:nth-child(6) { animation-delay: 0.6s; }
+
+/* Typing Animation */
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+.typing-animation {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typing 2s steps(40, end);
+}
+
+/* Pulse Animation */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+.pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Border Animation */
+@keyframes border-dance {
+  0%, 100% {
+    border-color: var(--matrix-green);
+  }
+  25% {
+    border-color: var(--neon-cyan);
+  }
+  50% {
+    border-color: var(--neon-purple);
+  }
+  75% {
+    border-color: var(--neon-red);
+  }
+}
+
+.border-dance {
+  animation: border-dance 4s linear infinite;
 }
 
 /* Utility Classes */
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  
+  .shadow-neon-green {
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+  }
+  
+  .shadow-neon-cyan {
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+  }
+  
+  .shadow-neon-red {
+    box-shadow: 0 0 20px rgba(255, 0, 64, 0.5);
   }
 }

@@ -20,19 +20,19 @@ export default function Home() {
             {/* Hero Section */}
             <section className="relative py-32 px-6">
                 <div className="max-w-6xl mx-auto text-center relative z-10">
-                    <div className="mb-6">
+                    <div className="mb-6 fade-in-down">
                         <span className="text-neon-cyan text-xl">&gt;&gt;&gt; INITIALIZING SYSTEM...</span>
                     </div>
-                    <h1 className="text-6xl md:text-8xl font-bold neon-green mb-8 glitch-text terminal-cursor">
+                    <h1 className="text-6xl md:text-8xl font-bold neon-green mb-8 terminal-cursor typing-animation">
                         CTF-WaR
                     </h1>
-                    <p className="text-2xl md:text-3xl mb-4 text-neon-cyan">
+                    <p className="text-2xl md:text-3xl mb-4 text-neon-cyan fade-in" style={{ animationDelay: '0.3s' }}>
                         [ CAPTURE THE FLAG PLATFORM ]
                     </p>
-                    <p className="text-xl mb-12 text-gray-400 max-w-3xl mx-auto">
+                    <p className="text-xl mb-12 text-gray-400 max-w-3xl mx-auto fade-in" style={{ animationDelay: '0.5s' }}>
                         Master cybersecurity through real-world hacking challenges. Test your skills in web exploitation, cryptography, forensics, and binary exploitation.
                     </p>
-                    <div className="flex gap-6 justify-center flex-wrap">
+                    <div className="flex gap-6 justify-center flex-wrap fade-in-up" style={{ animationDelay: '0.7s' }}>
                         <Link href="/challenges" className="cyber-button px-10 py-4 text-lg">
                             &gt; START_HACKING
                         </Link>
@@ -46,15 +46,14 @@ export default function Home() {
                 </div>
 
                 {/* Animated Background Elements */}
-                <div className="absolute inset-0 opacity-10">
-                    <div className="absolute top-20 left-10 text-4xl neon-green animate-pulse">{'{'}</div>
-                    <div className="absolute top-40 right-20 text-4xl neon-cyan animate-pulse delay-100">{'}'}</div>
-                    <div className="absolute bottom-20 left-1/4 text-4xl neon-red animate-pulse delay-200">{'<>'}</div>
-                    <div className="absolute bottom-40 right-1/3 text-4xl neon-green animate-pulse delay-300">{'[]'}</div>
+                <div className="absolute inset-0 opacity-10 pointer-events-none">
+                    <div className="absolute top-20 left-10 text-6xl neon-green pulse" style={{ animationDelay: '0s' }}>{'{'}</div>
+                    <div className="absolute top-40 right-20 text-6xl neon-cyan pulse" style={{ animationDelay: '0.5s' }}>{'}'}</div>
+                    <div className="absolute bottom-20 left-1/4 text-6xl neon-red pulse" style={{ animationDelay: '1s' }}>{'<>'}</div>
+                    <div className="absolute bottom-40 right-1/3 text-6xl neon-green pulse" style={{ animationDelay: '1.5s' }}>{'[]'}</div>
+                    <div className="absolute top-1/2 left-1/3 text-4xl neon-purple pulse" style={{ animationDelay: '2s' }}>{'()'}</div>
                 </div>
-            </section>
-
-            {/* System Status */}
+            </section>            {/* System Status */}
             <section className="py-12 px-6 border-t border-b border-matrix-green bg-black bg-opacity-50">
                 <div className="max-w-6xl mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -89,28 +88,29 @@ export default function Home() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {categories.map((category) => (
+                        {categories.map((category, index) => (
                             <Link
                                 key={category.id}
                                 href={`/challenges?category=${category.id}`}
-                                className="cyber-card p-8 group"
+                                className="cyber-card p-8 group stagger-item"
+                                style={{ animationDelay: `${index * 0.1}s` }}
                             >
-                                <div className="text-6xl mb-4">{category.icon}</div>
+                                <div className="text-6xl mb-4 transform group-hover:scale-110 transition-transform duration-300">
+                                    {category.icon}
+                                </div>
                                 <h3 className="text-2xl font-bold neon-green mb-3 group-hover:glitch-text">
                                     {category.name}
                                 </h3>
                                 <p className="text-gray-400 mb-4">{category.description}</p>
                                 <div className="flex justify-between items-center text-sm">
                                     <span className="text-neon-cyan">{category.count} challenges</span>
-                                    <span className="text-matrix-green">&gt;&gt;</span>
+                                    <span className="text-matrix-green group-hover:text-neon-cyan transition-colors">&gt;&gt;</span>
                                 </div>
                             </Link>
                         ))}
                     </div>
                 </div>
-            </section>
-
-            {/* Features Section */}
+            </section>            {/* Features Section */}
             <section className="py-20 px-6 bg-black bg-opacity-50 border-t border-matrix-green">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-16">
